@@ -86,6 +86,7 @@ pipeline {
 
 						echo -e "node_modules \nnpm-debug.log " > .dockerignore
 						
+						docker image rm ${env}/hello_world
 
 						docker build -t ${env}/hello_world .
 							
