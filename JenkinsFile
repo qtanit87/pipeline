@@ -67,7 +67,7 @@ pipeline {
 				}
 			}
 		} 
-		
+		/* 
 		stage('Compile nodejs code') {
 			steps {
 				script {
@@ -96,7 +96,7 @@ pipeline {
                 }
             }
         }
-		
+		*/
 	}
 	post ('sending email') {
 		always {
