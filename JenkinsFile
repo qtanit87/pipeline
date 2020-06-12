@@ -82,24 +82,10 @@ pipeline {
 				script {
 					sh returnStdout: true, script: '''
 						cd ${WORKSPACE}/
-						cat <<EOT > Dockerfile
-							WORKDIR /usr/src/app 
+						echo -e "WORKDIR /usr/src/app  \nCOPY package*.json ./ \nRUN npm install \nCOPY . . \nEXPOSE 3000 \nCMD [ "node", "index.js" ]" > test2
 
-							COPY package*.json ./
-
-							RUN npm install
-
-							COPY . .
-
-							EXPOSE 3000
-
-							CMD [ "node", "index.js" ]
-						EOT
-
-						cat <<EOT > .dockerignore
-							node_modules
-							npm-debug.log
-						EOT
+						echo -e "node_modules \nnpm-debug.log " > .dockerignore
+						
 
 						docker build -t ${env}/hello_world .
 							
