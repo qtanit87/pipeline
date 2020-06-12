@@ -82,7 +82,7 @@ pipeline {
 				script {
 					sh returnStdout: true, script: '''
 						cd ${WORKSPACE}/
-						echo -e "WORKDIR /usr/src/app  \nCOPY package*.json ./ \nRUN npm install \nCOPY . . \nEXPOSE 3000 \nCMD [ \"node"\, \"index.js"\ ]" > Dockerfile
+						echo -e "WORKDIR /usr/src/app  \nCOPY package*.json ./ \nRUN npm install \nCOPY . . \nEXPOSE 3000 \nCMD [ \"node\", \"index.js\" ]" > Dockerfile
 
 						echo -e "node_modules \nnpm-debug.log " > .dockerignore
 						
