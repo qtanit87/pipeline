@@ -12,7 +12,7 @@ pipeline {
 
 	environment {
 	
-		env="staging"
+		imagename="testing"
 
 	
 	}
@@ -71,7 +71,7 @@ pipeline {
 					sh returnStdout: true, script: '''
 						cd ${WORKSPACE}/
 						
-							npm install
+						npm install
 					'''
 				}
 			}
@@ -82,14 +82,28 @@ pipeline {
 				script {
 					sh returnStdout: true, script: '''
 						cd ${WORKSPACE}/
+						
 						echo -e 'FROM node:10 \nWORKDIR /usr/src/app  \nCOPY package*.json ./ \nRUN npm install \nCOPY . . \nEXPOSE 3000 \nCMD [ "node", "index.js" ]' > Dockerfile
 
 						echo -e "node_modules \nnpm-debug.log " > .dockerignore
 						
-						docker image rm ${env}/hello_world | true
+						docker image rm ${imagename} | true
 
-						docker build -t ${env}/hello_world .
+						docker build -t ${imagename} .
 							
+					'''
+				}
+			}
+    	}
+
+		stage('upload docker image to aws ecr') {
+			steps {
+				script {
+					sh returnStdout: true, script: '''
+						cd ${WORKSPACE}/
+						
+						docker tag ${imagename}:latest 688881585294.dkr.ecr.ap-southeast-1.amazonaws.com/${imagename}:latest
+						docker push 688881585294.dkr.ecr.ap-southeast-1.amazonaws.com/${imagename}:latest
 					'''
 				}
 			}
