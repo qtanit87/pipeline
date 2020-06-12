@@ -4,8 +4,8 @@ pipeline {
 
 	agent any
 	tools {
-		maven 'mvn'
-        	jdk 'JDK1.8'
+		
+        	
 	}
     
     options {
