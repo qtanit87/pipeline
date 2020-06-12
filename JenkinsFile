@@ -77,7 +77,7 @@ pipeline {
 			}
     	}
 
-		stage('Build docker image nodejs code') {
+		stage('Build docker image') {
 			steps {
 				script {
 					sh returnStdout: true, script: '''
