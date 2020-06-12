@@ -1,5 +1,6 @@
-#!groovy?
 
+
+properties([pipelineTriggers([githubPush()])])
 pipeline {
 
 	agent any
@@ -28,8 +29,7 @@ pipeline {
 												
 							
 							def VERSION = VersionNumber projectStartDate: '', versionNumberString: '${BUILD_DATE_FORMATTED, "yyyy_MM_dd"}_${BUILD_NUMBER}', versionPrefix: ''
-							env.DPLVERSION="${VERSION}"					
-																
+							env.DPLVERSION="${VERSION}"																		
 							currentBuild.displayName = VERSION
 						}
 			}
@@ -41,26 +41,10 @@ pipeline {
 				script {
 					
 					echo "Checkout hello nodejs Code"
-					checkout([$class: 'GitSCM', branches: [[name: "*/master"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'admin', url: "${appgiturl}"]]])
+					checkout([$class: 'GitSCM', branches: [[name: "*/${BRANCH_NAME}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'admin', url: "${appgiturl}"]]])
 					
 					
-					echo "Collect ticket changes for this build"
-					def changes = ""
-					build = currentBuild
-					// Go through the previous builds and get changes until the last successful build is found.
-					while (build != null && build.result != 'SUCCESS') {
-						//changes += "Build $build.displayName:\n"
 					
-						for (changeLog in build.changeSets) {
-							for (entry in changeLog.items) {
-								changes += "${entry.author} ${entry.msg}"
-								changes += "\n"
-							}
-						}
-						build = build.previousBuild
-					}
-					echo changes
-					writeFile file: "changeLog.txt", text: changes
 				}
 			}
 		} 
@@ -109,28 +93,7 @@ pipeline {
 				}
 			}
     	}
-		/* 		
-		stage('upload file to s3') { 
-			
-			steps {
-				script {
-					
-				}	
-			}
-		}		
 		
-			
-       
-
-        stage ('deployment') {
-            steps {
-                script {
-                    
-                        
-                }
-            }
-        }
-		*/
 	}
 	post ('sending email') {
 		always {
