@@ -1,0 +1,122 @@
+#!groovy?
+
+pipeline {
+
+	agent any
+	tools {
+		maven 'mvn'
+        	jdk 'JDK1.8'
+	}
+    
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+        disableConcurrentBuilds()
+    }
+
+	environment {
+	
+		gitbranch="MLI"
+
+	
+	}
+
+	stages {
+		stage('load env') { 
+			
+			steps {
+					script{				
+							
+							
+							env.appgiturl="https://github.com/qtanit87/node-hello.git"
+												
+							
+							def VERSION = VersionNumber projectStartDate: '', versionNumberString: '${BUILD_DATE_FORMATTED, "yyyy_MM_dd"}_${BUILD_NUMBER}', versionPrefix: ''
+							env.DPLVERSION="${VERSION}"					
+																
+							currentBuild.displayName = VERSION
+						}
+			}
+		}
+		
+		stage('cloning code') { 
+			
+			steps {
+				script {
+					
+					echo "Checkout hello nodejs Code"
+					checkout([$class: 'GitSCM', branches: [[name: "*/master"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'admin', url: "${appgiturl}"]]])
+					
+					
+					echo "Collect ticket changes for this build"
+					def changes = ""
+					build = currentBuild
+					// Go through the previous builds and get changes until the last successful build is found.
+					while (build != null && build.result != 'SUCCESS') {
+						//changes += "Build $build.displayName:\n"
+					
+						for (changeLog in build.changeSets) {
+							for (entry in changeLog.items) {
+								changes += "${entry.author} ${entry.msg}"
+								changes += "\n"
+							}
+						}
+						build = build.previousBuild
+					}
+					echo changes
+					writeFile file: "changeLog.txt", text: changes
+				}
+			}
+		} 
+		
+		stage('Compile nodejs code') {
+			steps {
+				script {
+						
+				}
+			}
+    	}
+				
+		stage('upload file to s3') { 
+			
+			steps {
+				script {
+					
+				}	
+			}
+		}		
+		
+			
+       
+
+        stage ('deployment') {
+            steps {
+                script {
+                    
+                        
+                }
+            }
+        }
+		
+	}
+	post ('sending email') {
+		always {
+			script {
+					mail bcc: '', body: """
+                    Jenkins Job: ${JOB_NAME}
+                    Build: $currentBuild.displayName
+                    Status: $currentBuild.currentResult
+                    Code Change: 
+		            App url: 
+		    	        example.com
+		            
+			
+                    (Automatic notification - Please don't reply to this email. For further information, please contact DevOps Team)
+                    Best Regards, 
+                    DevOps Team""", from: 'DevOps@example.com', replyTo: '', subject: "[$currentBuild.currentResult] - [${JOB_NAME}]", to: "thuynh49@dxc.com"
+
+                    
+                    
+			}
+		}
+	}
+}
