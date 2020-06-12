@@ -101,7 +101,8 @@ pipeline {
 				script {
 					sh returnStdout: true, script: '''
 						cd ${WORKSPACE}/
-						
+						export AWS_PROFILE=testing
+						aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 688881585294.dkr.ecr.ap-southeast-1.amazonaws.com
 						docker tag ${imagename}:latest 688881585294.dkr.ecr.ap-southeast-1.amazonaws.com/${imagename}:latest
 						docker push 688881585294.dkr.ecr.ap-southeast-1.amazonaws.com/${imagename}:latest
 					'''
