@@ -64,15 +64,17 @@ pipeline {
 				}
 			}
 		} 
-		/* 
 		stage('Compile nodejs code') {
 			steps {
 				script {
-						
+						cd ${WORKSPACE}/
+						sh returnStdout: true, script: '''
+							npm install
+						'''
 				}
 			}
     	}
-				
+		/* 			
 		stage('upload file to s3') { 
 			
 			steps {
