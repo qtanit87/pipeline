@@ -86,7 +86,7 @@ pipeline {
 					sh returnStdout: true, script: '''
 						cd ${WORKSPACE}/
 						
-						
+						eval $(aws ecr get-login --region ap-southeast-1 --no-include-email --profile testing)
 						docker tag ${imagename}:latest 688881585294.dkr.ecr.ap-southeast-1.amazonaws.com/${imagename}:latest
 						docker push 688881585294.dkr.ecr.ap-southeast-1.amazonaws.com/${imagename}:latest
 					'''
